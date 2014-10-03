@@ -29,3 +29,28 @@ library
                      , esqueleto
   -- hs-source-dirs:      
   default-language:    Haskell2010
+
+test-suite spec
+  type:
+      exitcode-stdio-1.0
+  ghc-options:
+      -Wall
+      -- -Werror
+  hs-source-dirs:
+      test
+  main-is:
+      Spec.hs
+  build-depends:
+      base, esqueleto, persistent, transformers, resourcet, text
+    , conduit
+    , containers
+    , HUnit
+    , QuickCheck
+    , hspec
+    , persistent-postgresql
+    , persistent-template
+    , monad-control
+    , monad-logger
+    , sigym4-geometry
+    , sigym4-geometry-persistent
+  default-language:    Haskell2010

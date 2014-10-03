@@ -20,13 +20,16 @@ import Data.Binary (encode)
 instance (VectorSpace v, KnownNat srid) => PersistField (Geometry v srid) where
     toPersistValue = PersistDbSpecific . B16.encode . toStrict
                    . encode
-    fromPersistValue (PersistDbSpecific bs)
-      = case B16.decode bs of
-            (b, "") -> case wkbDecode (fromChunks [b]) of
-                          Left e  -> Left (fromString e)
-                          Right g -> Right g
-            _       -> Left "fromPersistValue(Geometry v): invalid hex encoded geometry"
-    fromPersistValue _ = Left "fromPersistValue(Geometry v): wrong SQL type" 
+    fromPersistValue (PersistDbSpecific bs) = fromHexEWKB bs
+    fromPersistValue (PersistByteString bs) = fromHexEWKB bs
+    fromPersistValue _ = Left "fromPersistValue(Geometry v): wrong SQL type:"
+
+fromHexEWKB bs
+  = case B16.decode bs of
+        (b, "") -> case wkbDecode (fromChunks [b]) of
+                      Left e  -> Left (fromString e)
+                      Right g -> Right g
+        _       -> Left "fromHexEWKB: invalid hex encoded geometry"
 
 instance (VectorSpace v, KnownNat srid) => PersistFieldSql (Geometry v srid) where
     sqlType _ = SqlOther "geometry"
@@ -98,6 +101,14 @@ class Esqueleto query expr backend => GeoEsqueleto query expr backend where
            => expr (Value (Geometry v srid))
            -> expr (Value (Geometry v srid2))
 
+  force2D :: (VectorSpace v, KnownNat srid)
+          => expr (Value (Geometry v srid))
+          -> expr (Value (Geometry V2 srid))
+
+  force3D :: (VectorSpace v, KnownNat srid)
+          => expr (Value (Geometry v srid))
+          -> expr (Value (Geometry V3 srid))
+
   distance :: (VectorSpace v, KnownNat srid)
            => expr (Value (Geometry v srid))
            -> expr (Value (Geometry v srid))
@@ -155,6 +166,10 @@ instance GeoEsqueleto SqlQuery SqlExpr SqlBackend where
                -> SqlExpr (Value (Geometry v srid))
     closestPoint a b = unsafeSqlFunction func (a, b)
       where func = func2d3d (Proxy :: Proxy v) "ST_ClosestPoint" "ST_3DClosestPoint"
+
+    -- FIXME: Use CPP to vary on postgis version
+    force2D = unsafeSqlFunction "ST_Force_2D"
+    force3D = unsafeSqlFunction "ST_Force_3D"
 
     transform :: forall v srid srid2.
                  (VectorSpace v, KnownNat srid, KnownNat srid2)

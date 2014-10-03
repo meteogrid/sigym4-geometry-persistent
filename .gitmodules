@@ -1,0 +1,6 @@
+[submodule "sigym4-geometry"]
+	path = sigym4-geometry
+	url = https://github.com/meteogrid/sigym4-geometry
+[submodule "persistent"]
+	path = persistent
+	url = https://github.com/yesodweb/persistent
