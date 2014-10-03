@@ -15,8 +15,8 @@ before_install:
  - export CABAL=cabal-1.20
  - export POSTGIS_SQL_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
  - sudo -u postgres createuser -D -R -S test
- - sudo -u postgres psql -d template0 -c "ALTER USER test WITH PASSWORD 'test';"
- - sudo -u postgres createdb -E UTF8 test -O test
+ - sudo -u postgres psql -d template1 -c "ALTER USER test WITH PASSWORD 'test';"
+ - sudo -u postgres createdb -E UTF8 -O test -T template0 test
  - sudo -u postgres createlang -d test plpgsql
  - sudo -u postgres psql -d test -f $POSTGIS_SQL_PATH/postgis.sql
  - sudo -u postgres psql -d test -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
