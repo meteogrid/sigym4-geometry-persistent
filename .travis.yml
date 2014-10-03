@@ -4,7 +4,7 @@ matrix:
 
 env:
  - GHCVER=7.8.3
- - GHCVER=head
+ #- GHCVER=head
 
 before_install:
  - sudo add-apt-repository -y ppa:hvr/ghc
@@ -15,7 +15,7 @@ before_install:
  - export CABAL=cabal-1.20
  - export POSTGIS_SQL_PATH=/usr/share/postgresql/9.1/contrib/postgis-1.5
  - sudo -u postgres createuser -D -R -S test
- - sudo -u postgres psql -d test -c "ALTER USER test WITH PASSWORD 'test';"
+ - sudo -u postgres psql -d template0 -c "ALTER USER test WITH PASSWORD 'test';"
  - sudo -u postgres createdb -E UTF8 -T template0 test -O test
  - sudo -u postgres createlang -d test plpgsql
  - sudo -u postgres psql -d test -f $POSTGIS_SQL_PATH/postgis.sql
