@@ -24,7 +24,7 @@ library
                      , persistent >=2.1 && <2.2
                      , persistent-postgresql >=2.1 && <2.2
                      , base16-bytestring >=0.1 && <0.2
-                     , sigym4-geometry >=0.2 && <0.3
+                     , sigym4-geometry >=0.2.1 && <0.3
                      , binary >=0.7 && <0.8
                      , esqueleto
   -- hs-source-dirs:      
