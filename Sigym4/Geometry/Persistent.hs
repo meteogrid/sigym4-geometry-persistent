@@ -176,8 +176,10 @@ instance GeoEsqueleto SqlQuery SqlExpr SqlBackend where
               => SqlExpr (Value (Geometry v srid))
               -> SqlExpr (Value (Geometry v srid2))
     transform g = unsafeSqlFunction "ST_Transform"
-                  (g, val srid :: SqlExpr (Value Int))
+                  (ensureGeom g, val srid :: SqlExpr (Value Int))
         where srid = fromIntegral $ gSrid $ (undefined :: Geometry v srid2)
+              ensureGeom = unsafeSqlFunction "ST_AsEWKB"
+
 
 func2d3d p a b
   = case dim p of

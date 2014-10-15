@@ -4,6 +4,3 @@
 [submodule "persistent"]
 	path = persistent
 	url = https://github.com/meteogrid/persistent
-[submodule "esqueleto"]
-	path = esqueleto
-	url = https://github.com/meteogrid/esqueleto.git
