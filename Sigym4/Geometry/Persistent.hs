@@ -16,6 +16,7 @@ import qualified Data.ByteString.Base16 as B16
 import Sigym4.Geometry
 import Sigym4.Geometry.Binary
 import Data.Binary (encode)
+import Unsafe.Coerce (unsafeCoerce)
 
 instance (VectorSpace v, KnownNat srid) => PersistField (Geometry v srid) where
     toPersistValue = PersistDbSpecific . B16.encode . toStrict
@@ -175,9 +176,13 @@ instance GeoEsqueleto SqlQuery SqlExpr SqlBackend where
                  (VectorSpace v, KnownNat srid, KnownNat srid2)
               => SqlExpr (Value (Geometry v srid))
               -> SqlExpr (Value (Geometry v srid2))
-    transform g = unsafeSqlFunction "ST_Transform"
-                  (ensureGeom g, val srid :: SqlExpr (Value Int))
-        where srid = fromIntegral $ gSrid $ (undefined :: Geometry v srid2)
+    transform g
+        | srid /= srid2 = unsafeSqlFunction "ST_Transform" (g', vsrid)
+        | otherwise     = unsafeCoerce g'
+        where vsrid = val srid2 :: SqlExpr (Value Int)
+              srid2 = fromIntegral $ gSrid $ (undefined :: Geometry v srid2)
+              srid  = fromIntegral $ gSrid $ (undefined :: Geometry v srid)
+              g'    = ensureGeom g
 
 ensureGeom :: SqlExpr (Value (Geometry v srid))
            -> SqlExpr (Value (Geometry v srid))
