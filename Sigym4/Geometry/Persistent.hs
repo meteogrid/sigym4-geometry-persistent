@@ -57,6 +57,12 @@ class Esqueleto query expr backend => GeoEsqueleto query expr backend where
              -> expr (Value (Geometry v srid))
              -> expr (Value Bool)
 
+  bbox_intersects
+    :: (VectorSpace v, KnownNat srid)
+    => expr (Value (Geometry v srid))
+    -> expr (Value (Geometry v srid))
+    -> expr (Value Bool)
+
   disjoint :: (VectorSpace v, KnownNat srid)
            => expr (Value (Geometry v srid))
            -> expr (Value (Geometry v srid))
@@ -149,7 +155,14 @@ instance GeoEsqueleto SqlQuery SqlExpr SqlBackend where
                -> SqlExpr (Value Bool)
     intersects a b = unsafeSqlFunction func (a, b)
       where func = func2d3d (Proxy :: Proxy v) "ST_Intersects" "ST_3DIntersects"
-              
+
+    bbox_intersects :: forall v srid. (VectorSpace v, KnownNat srid)
+          => SqlExpr (Value (Geometry v srid))
+          -> SqlExpr (Value (Geometry v srid))
+          -> SqlExpr (Value Bool)
+    bbox_intersects a b = unsafeSqlBinOp op a b
+      where op = func2d3d (Proxy :: Proxy v) " && " " &&& "
+
     distance :: forall v srid. (VectorSpace v, KnownNat srid)
                => SqlExpr (Value (Geometry v srid))
                -> SqlExpr (Value (Geometry v srid))
