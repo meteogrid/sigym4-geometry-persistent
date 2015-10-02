@@ -21,8 +21,8 @@ library
   -- other-modules:       
   build-depends:       base >=4.7 && <5
                      , bytestring >=0.10 && <0.11
-                     , persistent >=2.1 && <2.2
-                     , persistent-postgresql >=2.1.0.1 && <2.2
+                     , persistent >=2.1 && <2.3
+                     , persistent-postgresql >=2.1.0.1 && <2.3
                      , base16-bytestring >=0.1 && <0.2
                      , sigym4-geometry >=0.3
                      , binary >=0.7 && <0.8
